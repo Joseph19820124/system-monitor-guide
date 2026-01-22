@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitor Guide | 系统监控指南</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .lang-toggle button {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .lang-toggle button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .lang-toggle button:hover:not(.active) {
+            background: var(--bg);
+        }
+
+        main {
+            padding: 40px 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card h2 .icon {
+            font-size: 1.8rem;
+        }
+
+        .bilingual {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .bilingual {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .lang-section {
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .lang-section h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .lang-section p {
+            margin-bottom: 12px;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            margin: 16px 0;
+        }
+
+        code {
+            background: var(--bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+
+        .status-good { color: var(--success); }
+        .status-warning { color: var(--warning); }
+        .status-danger { color: var(--danger); }
+
+        ul {
+            margin: 12px 0;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .formula {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .diagram {
+            background: var(--code-bg);
+            color: #a5f3fc;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-light);
+            border-top: 1px solid var(--border);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a5f3fc 0%, #a5f3fc 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-toggle">
+        <button class="active" onclick="showLang('both')">Both</button>
+        <button onclick="showLang('en')">EN</button>
+        <button onclick="showLang('zh')">中文</button>
+    </div>
+
+    <header>
+        <div class="container">
+            <h1>System Monitor Guide<br>系统监控指南</h1>
+            <p>Understanding CPU, Memory, Load & Steal Time<br>理解 CPU、内存、负载和 Steal 时间</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- CPU Usage -->
+        <div class="card">
+            <h2><span class="icon">⚡</span> CPU Usage | CPU 使用率</h2>
+            <div class="bilingual">
+                <div class="lang-section en">
+                    <h3>English</h3>
+                    <p><strong>CPU Usage</strong> shows the percentage of time the processor spends doing work.</p>
+                    <p>Key metrics from <code>top</code> command:</p>
+                    <ul>
+                        <li><strong>us (user)</strong> - Time running user programs</li>
+                        <li><strong>sy (system)</strong> - Time running kernel operations</li>
+                        <li><strong>id (idle)</strong> - Time doing nothing</li>
+                        <li><strong>wa (wait)</strong> - Time waiting for I/O</li>
+                        <li><strong>st (steal)</strong> - Time stolen by hypervisor</li>
+                    </ul>
+                </div>
+                <div class="lang-section zh">
+                    <h3>中文</h3>
+                    <p><strong>CPU 使用率</strong>显示处理器花费在工作上的时间百分比。</p>
+                    <p><code>top</code> 命令的关键指标：</p>
+                    <ul>
+                        <li><strong>us (用户)</strong> - 运行用户程序的时间</li>
+                        <li><strong>sy (系统)</strong> - 运行内核操作的时间</li>
+                        <li><strong>id (空闲)</strong> - 空闲时间</li>
+                        <li><strong>wa (等待)</strong> - 等待 I/O 的时间</li>
+                        <li><strong>st (偷取)</strong> - 被虚拟机监控程序抢占的时间</li>
+                    </ul>
+                </div>
+            </div>
+            <pre>%Cpu(s): 26.5 us,  4.1 sy,  0.0 ni, 28.6 id,  0.0 wa,  0.0 hi,  0.0 si, 40.8 st</pre>
+        </div>
+
+        <!-- Load Average -->
+        <div class="card">
+            <h2><span class="icon">📊</span> Load Average | 负载平均值</h2>
+            <div class="bilingual">
+                <div class="lang-section en">
+                    <h3>English</h3>
+                    <p><strong>Load average</strong> = number of processes waiting for CPU time.</p>
+                    <p>The 3 numbers represent averages over <strong>1 min, 5 min, 15 min</strong>.</p>
+                    <div class="formula">Load ÷ CPU Count = Utilization Ratio</div>
+                    <table>
+                        <tr><th>Load</th><th>Meaning (2 CPUs)</th></tr>
+                        <tr><td class="status-good">&lt; 2.0</td><td>CPUs not saturated</td></tr>
+                        <tr><td class="status-warning">= 2.0</td><td>Fully utilized</td></tr>
+                        <tr><td class="status-danger">&gt; 2.0</td><td>Overloaded, processes waiting</td></tr>
+                    </table>
+                </div>
+                <div class="lang-section zh">
+                    <h3>中文</h3>
+                    <p><strong>负载平均值</strong> = 等待 CPU 时间的进程数量。</p>
+                    <p>3 个数字分别代表 <strong>1 分钟、5 分钟、15 分钟</strong>的平均值。</p>
+                    <div class="formula">负载 ÷ CPU 核心数 = 利用率</div>
+                    <table>
+                        <tr><th>负载</th><th>含义（2 核 CPU）</th></tr>
+                        <tr><td class="status-good">&lt; 2.0</td><td>CPU 未饱和</td></tr>
+                        <tr><td class="status-warning">= 2.0</td><td>完全利用</td></tr>
+                        <tr><td class="status-danger">&gt; 2.0</td><td>过载，进程在等待</td></tr>
+                    </table>
+                </div>
+            </div>
+            <pre>load average: 2.13, 3.86, 5.41
+              ↑      ↑      ↑
+           1 min  5 min  15 min  (trending down ↓ is good)</pre>
+        </div>
+
+        <!-- Steal Time -->
+        <div class="card">
+            <h2><span class="icon">🔒</span> Steal Time | Steal 时间</h2>
+            <div class="bilingual">
+                <div class="lang-section en">
+                    <h3>English</h3>
+                    <p><strong>Steal time (st)</strong> = CPU time the hypervisor took away from your VM to give to other VMs on the same physical host.</p>
+                    <p>When your VM is ready to run but the hypervisor gives the CPU to another VM, that's "steal."</p>
+                    <p><strong>Common causes:</strong></p>
+                    <ul>
+                        <li><strong>Burstable instances (t2/t3)</strong> - CPU credits exhausted</li>
+                        <li><strong>Oversubscribed host</strong> - Too many VMs competing</li>
+                        <li><strong>Noisy neighbors</strong> - Other VMs hogging resources</li>
+                    </ul>
+                </div>
+                <div class="lang-section zh">
+                    <h3>中文</h3>
+                    <p><strong>Steal 时间 (st)</strong> = 虚拟机监控程序从你的虚拟机抢走的 CPU 时间，分配给同一物理主机上的其他虚拟机。</p>
+                    <p>当你的虚拟机准备运行，但 hypervisor 把 CPU 分给了其他虚拟机，这就是 "steal"。</p>
+                    <p><strong>常见原因：</strong></p>
+                    <ul>
+                        <li><strong>可突发实例 (t2/t3)</strong> - CPU 积分用完</li>
+                        <li><strong>主机超售</strong> - 虚拟机太多，互相竞争</li>
+                        <li><strong>吵闹的邻居</strong> - 其他虚拟机占用过多资源</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="diagram">Physical Server (Host) 物理服务器
+├── Your VM (wants CPU) 你的虚拟机（需要 CPU）
+├── Other VM 1 (wants CPU) 其他虚拟机 1
+├── Other VM 2 (wants CPU) 其他虚拟机 2
+└── Hypervisor decides who gets CPU 虚拟机监控程序决定分配</div>
+        </div>
+
+        <!-- Memory -->
+        <div class="card">
+            <h2><span class="icon">🧠</span> Memory Usage | 内存使用</h2>
+            <div class="bilingual">
+                <div class="lang-section en">
+                    <h3>English</h3>
+                    <p>Memory usage from <code>free -h</code> command:</p>
+                    <ul>
+                        <li><strong>total</strong> - Total physical RAM</li>
+                        <li><strong>used</strong> - Memory in use by programs</li>
+                        <li><strong>free</strong> - Completely unused memory</li>
+                        <li><strong>buff/cache</strong> - Memory used for disk caching (can be freed)</li>
+                        <li><strong>available</strong> - Memory available for new programs</li>
+                    </ul>
+                    <p><strong>Tip:</strong> Look at "available", not "free" - Linux uses free memory for caching.</p>
+                </div>
+                <div class="lang-section zh">
+                    <h3>中文</h3>
+                    <p><code>free -h</code> 命令显示的内存使用：</p>
+                    <ul>
+                        <li><strong>total</strong> - 物理内存总量</li>
+                        <li><strong>used</strong> - 程序使用的内存</li>
+                        <li><strong>free</strong> - 完全未使用的内存</li>
+                        <li><strong>buff/cache</strong> - 用于磁盘缓存的内存（可释放）</li>
+                        <li><strong>available</strong> - 可供新程序使用的内存</li>
+                    </ul>
+                    <p><strong>提示：</strong>看 "available" 而不是 "free" - Linux 会用空闲内存做缓存。</p>
+                </div>
+            </div>
+            <pre>               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       2.3Gi       2.9Gi        15Mi       2.5Gi       5.1Gi</pre>
+        </div>
+
+        <!-- Solutions -->
+        <div class="card">
+            <h2><span class="icon">🛠️</span> Solutions | 解决方案</h2>
+            <div class="bilingual">
+                <div class="lang-section en">
+                    <h3>English</h3>
+                    <p><strong>High CPU / Load:</strong></p>
+                    <ul>
+                        <li>Find processes: <code>ps aux --sort=-%cpu | head</code></li>
+                        <li>Kill unused processes: <code>kill PID</code></li>
+                        <li>Consider upgrading instance type</li>
+                    </ul>
+                    <p><strong>High Steal Time:</strong></p>
+                    <ul>
+                        <li>Wait for CPU credits to regenerate</li>
+                        <li>Enable unlimited mode: <code>aws ec2 modify-instance-credit-specification</code></li>
+                        <li>Upgrade to non-burstable instance (m5, c5)</li>
+                    </ul>
+                    <p><strong>High Memory:</strong></p>
+                    <ul>
+                        <li>Find memory hogs: <code>ps aux --sort=-%mem | head</code></li>
+                        <li>Clear caches: <code>sync; echo 3 > /proc/sys/vm/drop_caches</code></li>
+                    </ul>
+                </div>
+                <div class="lang-section zh">
+                    <h3>中文</h3>
+                    <p><strong>CPU/负载过高：</strong></p>
+                    <ul>
+                        <li>查找进程：<code>ps aux --sort=-%cpu | head</code></li>
+                        <li>终止无用进程：<code>kill PID</code></li>
+                        <li>考虑升级实例类型</li>
+                    </ul>
+                    <p><strong>Steal 时间过高：</strong></p>
+                    <ul>
+                        <li>等待 CPU 积分自动恢复</li>
+                        <li>启用无限模式：<code>aws ec2 modify-instance-credit-specification</code></li>
+                        <li>升级到非突发实例 (m5, c5)</li>
+                    </ul>
+                    <p><strong>内存过高：</strong></p>
+                    <ul>
+                        <li>查找内存大户：<code>ps aux --sort=-%mem | head</code></li>
+                        <li>清除缓存：<code>sync; echo 3 > /proc/sys/vm/drop_caches</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Reference -->
+        <div class="card">
+            <h2><span class="icon">📋</span> Quick Reference | 快速参考</h2>
+            <pre># Check CPU and Memory 检查 CPU 和内存
+top -bn1 | head -5
+free -h
+
+# Top processes by CPU 按 CPU 排序的进程
+ps aux --sort=-%cpu | head -10
+
+# Top processes by Memory 按内存排序的进程
+ps aux --sort=-%mem | head -10
+
+# Disk usage 磁盘使用
+df -h /
+
+# Kill a process 终止进程
+kill PID</pre>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Created with Claude Code | 使用 Claude Code 创建</p>
+            <p style="margin-top: 8px; font-size: 0.9rem;">© 2026 System Monitor Guide</p>
+        </div>
+    </footer>
+
+    <script>
+        function showLang(lang) {
+            const buttons = document.querySelectorAll('.lang-toggle button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const enSections = document.querySelectorAll('.lang-section.en');
+            const zhSections = document.querySelectorAll('.lang-section.zh');
+            const bilinguals = document.querySelectorAll('.bilingual');
+
+            if (lang === 'en') {
+                enSections.forEach(el => el.style.display = 'block');
+                zhSections.forEach(el => el.style.display = 'none');
+                bilinguals.forEach(el => el.style.gridTemplateColumns = '1fr');
+            } else if (lang === 'zh') {
+                enSections.forEach(el => el.style.display = 'none');
+                zhSections.forEach(el => el.style.display = 'block');
+                bilinguals.forEach(el => el.style.gridTemplateColumns = '1fr');
+            } else {
+                enSections.forEach(el => el.style.display = 'block');
+                zhSections.forEach(el => el.style.display = 'block');
+                bilinguals.forEach(el => {
+                    if (window.innerWidth > 768) {
+                        el.style.gridTemplateColumns = '1fr 1fr';
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
